@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Events | Book Your Experience</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--primary); }
+
+        /* Section Styling */
+        .section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h2 { margin-top: 0; font-size: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+
+        /* Events List Styling */
+        #events {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .event-card {
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 12px;
+            transition: transform 0.2s;
+            background: #fff;
+        }
+
+        .event-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+
+        .event-id { font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase; }
+
+        .event-name { display: block; font-size: 1.1rem; font-weight: 600; margin: 5px 0; }
+
+        /* Form Styling */
+        .grid-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        input {
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { 
+            border-color: var(--primary); 
+            /* This replaces 'ring' with a standard CSS glow */
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); 
+            outline: none; 
+        }
+
+        .full-width { grid-column: span 2; }
+
+        /* Button Styling */
+        button {
+            cursor: pointer;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        button:hover { background-color: var(--primary-hover); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .btn-outline:hover { background: #6366f111; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Elite Events</h1>
+            <p>Discover and book the best local experiences.</p>
+        </header>
+
+        <section class="section">
+            <button class="btn-outline" onclick="loadEvents()">Refresh Event List</button>
+            <ul id="events">
+                <p style="color: var(--text-muted)">Click refresh to see available events...</p>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>Book Your Spot</h2>
+            <div class="grid-form">
+                <input id="name" class="full-width" placeholder="Full Name" />
+                <input id="event" placeholder="Event ID (e.g. 101)" />
+                <input id="tickets" type="number" placeholder="No. of Tickets" />
+                <button class="full-width" onclick="book()">Confirm Booking</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Replace with your actual VM IP
+        const API = "http://BACKEND_VM_IP:5000"
+
+        async function loadEvents() {
+            const list = document.getElementById("events");
+            list.innerHTML = "Loading events...";
+
+            try {
+                const res = await fetch(`${API}/events`);
+                const data = await res.json();
+                
+                list.innerHTML = "";
+                data.forEach(e => {
+                    const li = document.createElement("li");
+                    li.className = "event-card";
+                    li.innerHTML = `
+                        <span class="event-id">ID: ${e.id || 'N/A'}</span>
+                        <span class="event-name">${e.name}</span>
+                        <span style="color: var(--text-muted)">📍 ${e.location}</span>
+                    `;
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                list.innerHTML = "Failed to load events. Check API connection.";
+            }
+        }
+
+        async function book() {
+            const name = document.getElementById("name").value;
+            const event = document.getElementById("event").value;
+            const tickets = document.getElementById("tickets").value;
+
+            if(!name || !event || !tickets) {
+                alert("Please fill in all fields");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/book`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        event_id: event,
+                        user_name: name,
+                        tickets: parseInt(tickets)
+                    })
+                });
+
+                if (res.ok) {
+                    alert("✨ Booking successful!");
+                    // Clear inputs
+                    document.getElementById("event").value = "";
+                    document.getElementById("tickets").value = "";
+                } else {
+                    alert("Booking failed. Please check the Event ID.");
+                }
+            } catch (err) {
+                alert("Error connecting to server.");
+            }
+        }
+    </script>
+
+</body>
+</html>
