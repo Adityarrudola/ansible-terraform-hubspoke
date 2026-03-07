@@ -7,6 +7,3 @@
 # Secrets
 *.tfvars
 secrets.yml
-
-# SSH keys
-keys/
