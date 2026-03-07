@@ -1,3 +1,14 @@
 - name: update apt
   apt:
     update_cache: yes
+
+- name: install base packages
+  apt:
+    name:
+      - curl
+      - ca-certificates
+      - apt-transport-https
+      - gnupg
+      - lsb-release
+      - software-properties-common
+    state: present
