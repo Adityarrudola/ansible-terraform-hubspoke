@@ -35,16 +35,6 @@ pipeline {
                     export ARM_TENANT_ID=$ARM_TENANT_ID
                     '''
 
-                    dir('terraform/hub') {
-                        sh '''
-                        terraform init
-                        terraform fmt
-                        terraform validate
-                        terraform plan
-                        terraform apply -auto-approve
-                        '''
-                    }
-
                     dir('terraform/dev-1') {
                         sh '''
                         terraform init
@@ -56,6 +46,16 @@ pipeline {
                     }
 
                     dir('terraform/dev-2') {
+                        sh '''
+                        terraform init
+                        terraform fmt
+                        terraform validate
+                        terraform plan
+                        terraform apply -auto-approve
+                        '''
+                    }
+
+                    dir('terraform/hub') {
                         sh '''
                         terraform init
                         terraform fmt
