@@ -12,11 +12,13 @@ const config = {
   server: process.env.DB_HOST,
   database: process.env.DB_NAME,
   options: {
-    encrypt: true
-  }
+    encrypt: true,
+    trustServerCertificate: false
+  },
+  port: 1433
 }
 
-app.get("/events", async (req,res)=>{
+app.get("/events", async (req, res) => {
 
   try {
 
@@ -26,7 +28,7 @@ app.get("/events", async (req,res)=>{
 
     res.json(result.recordset)
 
-  } catch(err){
+  } catch (err) {
 
     res.status(500).send(err)
 
@@ -34,9 +36,9 @@ app.get("/events", async (req,res)=>{
 
 })
 
-app.post("/book", async (req,res)=>{
+app.post("/book", async (req, res) => {
 
-  const {event_id,user_name,tickets} = req.body
+  const { event_id, user_name, tickets } = req.body
 
   try {
 
@@ -47,16 +49,15 @@ app.post("/book", async (req,res)=>{
       VALUES (${event_id},${user_name},${tickets})
     `
 
-    res.json({message:"Booking successful"})
+    res.json({ message: "Booking successful" })
 
-  } catch(err){
-
-    res.status(500).send(err)
-
+  } catch (err) {
+    console.error("SQL ERROR:", err)
+    res.status(500).json(err)
   }
 
 })
 
-app.listen(5000,()=>{
+app.listen(5000, () => {
   console.log("Backend running on port 5000")
 })
