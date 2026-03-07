@@ -44,7 +44,7 @@ resource "azurerm_virtual_network" "demo" {
   name                = "${var.env}-vnet"
   location            = azurerm_resource_group.demo.location
   resource_group_name = azurerm_resource_group.demo.name
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["10.1.0.0/16"]
 
   tags = {
     name = var.env
@@ -56,7 +56,7 @@ resource "azurerm_subnet" "demo" {
   name                 = "${var.env}-subnet"
   resource_group_name  = azurerm_resource_group.demo.name
   virtual_network_name = azurerm_virtual_network.demo.name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = ["10.1.1.0/24"]
 }
 
 # nsg association to subnet
