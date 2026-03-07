@@ -1,4 +1,10 @@
+- name: update apt cache
+  become: yes
+  apt:
+    update_cache: yes
+
 - name: install docker dependencies
+  become: yes
   apt:
     name:
       - apt-transport-https
@@ -8,12 +14,21 @@
     state: present
 
 - name: install docker
+  become: yes
   apt:
     name: docker.io
     state: present
 
-- name: start docker
+- name: start docker service
+  become: yes
   service:
     name: docker
     state: started
     enabled: true
+
+- name: add azureuser to docker group
+  become: yes
+  user:
+    name: azureuser
+    groups: docker
+    append: yes
