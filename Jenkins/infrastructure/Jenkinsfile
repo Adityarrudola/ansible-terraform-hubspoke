@@ -3,12 +3,6 @@ pipeline {
 
     stages {
 
-        stage('Terraform Version') {
-            steps {
-                sh 'terraform -version'
-            }
-        }
-
         stage('Terraform Dev1') {
             steps {
                 withCredentials([

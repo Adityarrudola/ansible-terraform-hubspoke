@@ -20,8 +20,20 @@ variable "inbound_rules" {
     protocol               = string
     destination_port_range = string
   }))
+
   default = [
-    { priority = "200", access = "Allow", protocol = "*", destination_port_range = "22" }
+    {
+      priority               = "200"
+      access                 = "Allow"
+      protocol               = "Tcp"
+      destination_port_range = "22"
+    },
+    {
+      priority               = "210"
+      access                 = "Allow"
+      protocol               = "Tcp"
+      destination_port_range = "3000"
+    }
   ]
 }
 
