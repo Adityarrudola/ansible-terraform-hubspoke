@@ -9,3 +9,7 @@ output "hub_vnet_name" {
 output "hub_rg_name" {
   value = azurerm_resource_group.demo.name
 }
+
+output "acr_id" {
+  value = azurerm_container_registry.demo.id
+}

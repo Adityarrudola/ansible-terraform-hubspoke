@@ -43,6 +43,10 @@ resource "azurerm_linux_virtual_machine" "demo" {
   network_interface_ids = [
     azurerm_network_interface.demo.id
   ]
+ 
+  identity {
+    type = "SystemAssigned"
+  }
 
   admin_ssh_key {
     username   = "azureuser"
