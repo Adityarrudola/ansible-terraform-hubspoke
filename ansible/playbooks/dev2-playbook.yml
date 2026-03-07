@@ -4,5 +4,7 @@
   roles:
     - common
     - docker
+    - azure_cli
     - acr_login
+    - keyvault
     - backend
