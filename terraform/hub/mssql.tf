@@ -3,8 +3,8 @@ resource "azurerm_mssql_server" "demo" {
   resource_group_name          = azurerm_resource_group.demo.name
   location                     = azurerm_resource_group.demo.location
   version                      = "12.0"
-  administrator_login          = var.sql_admin
-  administrator_login_password = var.sql_password
+  administrator_login          = random_string.sql_username.result
+  administrator_login_password = random_password.sql_password.result
 }
 
 resource "azurerm_mssql_database" "demo" {

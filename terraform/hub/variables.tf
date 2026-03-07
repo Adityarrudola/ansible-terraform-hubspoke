@@ -8,15 +8,6 @@ variable "location" {
   default = "Southeast Asia"
 }
 
-variable "sql_admin" {
-  type        = string
-}
-
-variable "sql_password" {
-  type        = string
-  sensitive   = true
-}
-
 variable "inbound_rules" {
   type = list(object({
     priority               = string

@@ -1,0 +1,5 @@
+- name: login to Azure Container Registry
+  shell: |
+    docker login {{ acr_login_server }} \
+    -u {{ acr_username }} \
+    -p {{ acr_password }}

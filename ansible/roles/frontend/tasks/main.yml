@@ -1,0 +1,8 @@
+- name: pull frontend image
+  docker_container:
+    name: frontend
+    image: "{{ acr_login_server }}/frontend:latest"
+    state: started
+    restart_policy: always
+    ports:
+      - "80:80"

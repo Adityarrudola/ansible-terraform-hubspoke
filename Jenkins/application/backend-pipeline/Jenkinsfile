@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    environment {
+        ACR_NAME = "hubrudcontainerregistry.azurecr.io"
+        IMAGE_NAME = "backend"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Backend Image') {
+            steps {
+                dir('services/backend') {
+                    sh '''
+                    docker build -t $ACR_NAME/$IMAGE_NAME:latest .
+                    '''
+                }
+            }
+        }
+
+        stage('Login to ACR') {
+            steps {
+                sh '''
+                az acr login --name hubrudcontainerregistry
+                '''
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                sh '''
+                docker push $ACR_NAME/$IMAGE_NAME:latest
+                '''
+            }
+        }
+
+        stage('Deploy via Ansible') {
+            steps {
+                dir('ansible') {
+                    sh '''
+                    ansible-playbook playbooks/dev2-playbook.yml
+                    '''
+                }
+            }
+        }
+
+    }
+}

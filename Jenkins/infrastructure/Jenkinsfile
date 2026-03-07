@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+
+    environment {
+        ARM_CLIENT_ID       = credentials('azure-client-id')
+        ARM_CLIENT_SECRET   = credentials('azure-client-secret')
+        ARM_SUBSCRIPTION_ID = credentials('azure-subscription-id')
+        ARM_TENANT_ID       = credentials('azure-tenant-id')
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Terraform Hub') {
+            steps {
+                dir('terraform/hub') {
+                    sh '''
+                    terraform init
+                    terraform plan
+                    terraform apply -auto-approve
+                    '''
+                }
+            }
+        }
+
+        stage('Terraform Dev1') {
+            steps {
+                dir('terraform/dev-1') {
+                    sh '''
+                    terraform init
+                    terraform plan
+                    terraform apply -auto-approve
+                    '''
+                }
+            }
+        }
+
+        stage('Terraform Dev2') {
+            steps {
+                dir('terraform/dev-2') {
+                    sh '''
+                    terraform init
+                    terraform plan
+                    terraform apply -auto-approve
+                    '''
+                }
+            }
+        }
+
+        stage('Terraform Networking') {
+            steps {
+                dir('terraform/networking') {
+                    sh '''
+                    terraform init
+                    terraform plan
+                    terraform apply -auto-approve
+                    '''
+                }
+            }
+        }
+
+    }
+}

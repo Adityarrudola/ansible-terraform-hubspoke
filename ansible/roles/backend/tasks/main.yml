@@ -1,0 +1,13 @@
+- name: pull backend image
+  docker_container:
+    name: backend
+    image: "{{ acr_login_server }}/backend:latest"
+    state: started
+    restart_policy: always
+    ports:
+      - "3000:3000"
+    env:
+      DB_HOST: "{{ sql_server }}"
+      DB_NAME: "{{ sql_db }}"
+      DB_USER: "{{ sql_user }}"
+      DB_PASSWORD: "{{ sql_password }}"

@@ -1,0 +1,8 @@
+- hosts: dev1
+  become: yes
+
+  roles:
+    - common
+    - docker
+    - acr_login
+    - frontend
