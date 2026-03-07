@@ -1,6 +1,18 @@
 - name: login using managed identity
   command: az login --identity
 
+- name: get sql username
+  command: az keyvault secret show --vault-name hub-rudola-kv --name sql-username --query value -o tsv
+  register: sql_username_result
+
+- name: set sql username fact
+  set_fact:
+    sql_username: "{{ sql_username_result.stdout }}"
+
 - name: get sql password
   command: az keyvault secret show --vault-name hub-rudola-kv --name sql-password --query value -o tsv
-  register: sql_password
+  register: sql_password_result
+
+- name: set sql password fact
+  set_fact:
+    sql_password: "{{ sql_password_result.stdout }}"
