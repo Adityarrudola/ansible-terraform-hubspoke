@@ -37,27 +37,27 @@ pipeline {
         stage('Generate Ansible Inventory') {
             steps {
                 script {
+
                     env.DEV1_IP = sh(
-                        script: "cd terraform/dev-1 && terraform output -raw dev1_public_ip",
+                        script: "cd terraform/dev-1 && terraform output -raw dev1_public_ip -no-color",
                         returnStdout: true
                     ).trim()
 
                     sh """
-                    cat > ansible/inventory/hosts.ini <<EOF
-                    [dev1]
-                    ${env.DEV1_IP} ansible_user=azureuser ansible_ssh_private_key_file=../keys/demo
-                    EOF
-                    """
+printf "[dev1]\\n%s ansible_user=azureuser\\n" "${env.DEV1_IP}" > ansible/inventory/hosts.ini
+"""
                 }
             }
         }
 
         stage('Deploy via Ansible') {
             steps {
-                dir('ansible') {
-                    sh '''
-                    ansible-playbook playbooks/dev1-playbook.yml
-                    '''
+                sshagent(credentials: ['azure-vm-key']) {
+                    dir('ansible') {
+                        sh '''
+                        ansible-playbook playbooks/dev1-playbook.yml
+                        '''
+                    }
                 }
             }
         }

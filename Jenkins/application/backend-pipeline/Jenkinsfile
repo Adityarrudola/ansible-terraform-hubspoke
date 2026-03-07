@@ -44,10 +44,7 @@ pipeline {
                     ).trim()
 
                     sh """
-cat > ansible/inventory/hosts.ini <<EOF
-[dev2]
-${env.DEV2_IP} ansible_user=azureuser ansible_ssh_private_key_file=../keys/demo
-EOF
+printf "[dev2]\\n%s ansible_user=azureuser\\n" "${env.DEV2_IP}" > ansible/inventory/hosts.ini
 """
                 }
             }
@@ -55,10 +52,12 @@ EOF
 
         stage('Deploy via Ansible') {
             steps {
-                dir('ansible') {
-                    sh '''
-                    ansible-playbook playbooks/dev2-playbook.yml
-                    '''
+                sshagent(credentials: ['azure-vm-key']) {
+                    dir('ansible') {
+                        sh '''
+                        ansible-playbook playbooks/dev2-playbook.yml
+                        '''
+                    }
                 }
             }
         }
