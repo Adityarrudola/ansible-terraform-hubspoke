@@ -13,3 +13,7 @@ output "hub_rg_name" {
 output "acr_id" {
   value = azurerm_container_registry.demo.id
 }
+
+output "keyvault_id" {
+  value = azurerm_key_vault.demo.id
+}
