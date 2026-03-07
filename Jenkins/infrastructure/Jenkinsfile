@@ -2,6 +2,32 @@ pipeline {
     agent any
 
     stages {
+        
+        stage('Terraform Hub') {
+            steps {
+                withCredentials([
+                    azureServicePrincipal(
+                        credentialsId: 'azure-service-principal',
+                        subscriptionIdVariable: 'ARM_SUBSCRIPTION_ID',
+                        clientIdVariable: 'ARM_CLIENT_ID',
+                        clientSecretVariable: 'ARM_CLIENT_SECRET',
+                        tenantIdVariable: 'ARM_TENANT_ID'
+                    )
+                ]) {
+
+                    dir('terraform/hub') {
+                        sh '''
+                        terraform init
+                        terraform fmt
+                        terraform validate
+                        terraform plan
+                        terraform apply -auto-approve
+                        '''
+                    }
+
+                }
+            }
+        }
 
         stage('Terraform Dev1') {
             steps {
@@ -55,31 +81,6 @@ pipeline {
             }
         }
 
-        stage('Terraform Hub') {
-            steps {
-                withCredentials([
-                    azureServicePrincipal(
-                        credentialsId: 'azure-service-principal',
-                        subscriptionIdVariable: 'ARM_SUBSCRIPTION_ID',
-                        clientIdVariable: 'ARM_CLIENT_ID',
-                        clientSecretVariable: 'ARM_CLIENT_SECRET',
-                        tenantIdVariable: 'ARM_TENANT_ID'
-                    )
-                ]) {
-
-                    dir('terraform/hub') {
-                        sh '''
-                        terraform init
-                        terraform fmt
-                        terraform validate
-                        terraform plan
-                        terraform apply -auto-approve
-                        '''
-                    }
-
-                }
-            }
-        }
 
         stage('Terraform Networking') {
             steps {
