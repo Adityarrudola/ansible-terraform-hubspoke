@@ -1,7 +1,7 @@
 - name: pull frontend image
   docker_container:
     name: frontend
-    image: "{{ acr_login_server }}/frontend:latest"
+    image: "hubrudcontainerregistry.azurecr.io/frontend:latest"
     state: started
     restart_policy: always
     ports:
