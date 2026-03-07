@@ -1,8 +1,11 @@
-- name: pull frontend image
-  docker_container:
+- name: run frontend container
+  community.docker.docker_container:
     name: frontend
-    image: "hubrudcontainerregistry.azurecr.io/frontend:latest"
+    image: hubrudcontainerregistry.azurecr.io/frontend:latest
     state: started
     restart_policy: always
+    pull: yes
+    recreate: true
+    restart: true
     ports:
       - "80:80"
