@@ -39,7 +39,7 @@ pipeline {
                 script {
 
                     env.DEV2_IP = sh(
-                        script: "cd terraform/dev-2 && terraform init && terraform output -raw dev2_public_ip",
+                        script: "cd terraform/dev-2 && terraform output -raw dev2_public_ip -no-color",
                         returnStdout: true
                     ).trim()
 
@@ -48,7 +48,7 @@ cat > ansible/inventory/hosts.ini <<EOF
 [dev2]
 ${env.DEV2_IP} ansible_user=azureuser ansible_ssh_private_key_file=../keys/demo
 EOF
-                    """
+"""
                 }
             }
         }
