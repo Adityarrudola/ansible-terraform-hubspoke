@@ -44,6 +44,10 @@ resource "azurerm_linux_virtual_machine" "demo" {
     azurerm_network_interface.demo.id
   ]
 
+  identity {
+    type = "SystemAssigned"
+  }
+  
   admin_ssh_key {
     username   = "azureuser"
     public_key = file("../../keys/demo.pub")
@@ -60,6 +64,7 @@ resource "azurerm_linux_virtual_machine" "demo" {
     sku       = "22_04-lts"
     version   = "latest"
   }
+
 
   depends_on = [
     azurerm_network_interface.demo

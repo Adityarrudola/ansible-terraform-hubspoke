@@ -1,0 +1,6 @@
+- name: login using managed identity
+  command: az login --identity
+
+- name: get sql password
+  command: az keyvault secret show --vault-name hub-rudola-kv --name sql-password --query value -o tsv
+  register: sql_password
