@@ -8,6 +8,12 @@ pipeline {
 
     stages {
 
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Build Frontend Image') {
             steps {
                 dir('services/frontend') {
@@ -31,6 +37,25 @@ pipeline {
                 sh '''
                 docker push $ACR_NAME/$IMAGE_NAME:latest
                 '''
+            }
+        }
+
+        stage('Generate Ansible Inventory') {
+            steps {
+                script {
+
+                    env.DEV1_IP = sh(
+                        script: "cd terraform/dev-1 && terraform init && terraform output -raw dev1_public_ip",
+                        returnStdout: true
+                    ).trim()
+
+                    sh """
+tee ansible/inventory/hosts.ini <<EOF
+[dev1]
+${env.DEV1_IP} ansible_user=azureuser ansible_ssh_private_key_file=../keys/demo
+EOF
+                    """
+                }
             }
         }
 
