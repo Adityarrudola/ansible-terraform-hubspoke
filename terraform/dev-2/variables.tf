@@ -32,7 +32,7 @@ variable "inbound_rules" {
       priority               = "210"
       access                 = "Allow"
       protocol               = "Tcp"
-      destination_port_range = "3000"
+      destination_port_range = "5000"
     }
   ]
 }
