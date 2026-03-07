@@ -1,5 +1,3 @@
-data "azurerm_client_config" "demo" {}
-
 resource "azurerm_key_vault_access_policy" "dev2_vm_policy" {
 
   key_vault_id = data.terraform_remote_state.hub.outputs.keyvault_id

@@ -1,5 +1,3 @@
-data "azurerm_client_config" "demo" {}
-
 resource "azurerm_key_vault" "demo" {
   name                = "${var.env}-rudola-kv"
   location            = azurerm_resource_group.demo.location

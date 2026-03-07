@@ -7,6 +7,8 @@ terraform {
   }
 }
 
+data "azurerm_client_config" "demo" {}
+
 provider "azurerm" {
   features {}
 }
