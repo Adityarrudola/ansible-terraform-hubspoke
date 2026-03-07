@@ -28,10 +28,12 @@ pipeline {
 
         stage('Inject Backend IP into Nginx') {
             steps {
-                sh """
-                cp services/frontend/nginx.conf services/frontend/nginx.generated.conf
-                sed -i 's|BACKEND_IP|${BACKEND_IP}|g' services/frontend/nginx.generated.conf
-                """
+                dir('services/frontend') {
+                    sh """
+                    cp nginx.conf nginx.generated.conf
+                    sed -i 's|BACKEND_IP|${BACKEND_IP}|g' nginx.generated.conf
+                    """
+                }
             }
         }
 
