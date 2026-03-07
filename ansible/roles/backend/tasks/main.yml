@@ -7,7 +7,7 @@
     recreate: true
     pull: true
     ports:
-      - "3000:3000"
+      - "5000:5000"
     env:
       DB_HOST: "{{ sql_server }}"
       DB_NAME: "{{ sql_database }}"

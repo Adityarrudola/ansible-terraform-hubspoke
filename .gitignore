@@ -6,4 +6,3 @@
 
 # Secrets
 *.tfvars
-secrets.yml
