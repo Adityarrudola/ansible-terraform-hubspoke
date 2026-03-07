@@ -1,11 +1,5 @@
-- name: install Azure CLI
-  apt:
-    name: azure-cli
-    state: present
-    update_cache: yes
-
 - name: login using managed identity
-  shell: az login --identity
+  command: az login --identity
 
-- name: login to ACR
-  shell: az acr login --name hubrudcontainerregistry
+- name: login to Azure Container Registry
+  command: az acr login --name hubrudcontainerregistry

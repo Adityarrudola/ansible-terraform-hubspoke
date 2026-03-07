@@ -1,5 +1,35 @@
+- name: install Azure CLI dependencies
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - apt-transport-https
+      - lsb-release
+      - gnupg
+    state: present
+    update_cache: yes
+
+- name: add Microsoft GPG key
+  shell: |
+    curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg
+  args:
+    creates: /etc/apt/trusted.gpg.d/microsoft.gpg
+
+- name: add Azure CLI repository
+  shell: |
+    AZ_REPO=$(lsb_release -cs)
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" > /etc/apt/sources.list.d/azure-cli.list
+  args:
+    creates: /etc/apt/sources.list.d/azure-cli.list
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+
+- name: install Azure CLI
+  apt:
+    name: azure-cli
+    state: present
+
 - name: login using managed identity
   command: az login --identity
-
-- name: login to Azure Container Registry
-  command: az acr login --name hubrudcontainerregistry
