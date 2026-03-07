@@ -10,6 +10,6 @@
       - "5000:5000"
     env:
       DB_HOST: "{{ sql_server }}"
-      DB_NAME: "{{ sql_db }}"
-      DB_USER: "{{ sql_user }}@hub-demorudola-sqlserver"
-      DB_PASSWORD: "{{ sql_password.stdout }}"
+      DB_NAME: "{{ sql_database }}"
+      DB_USER: "{{ sql_username }}@hub-demorudola-sqlserver"
+      DB_PASSWORD: "{{ sql_password }}"
