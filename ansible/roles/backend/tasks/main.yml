@@ -34,15 +34,27 @@
   apt:
     update_cache: yes
 
-- name: install sqlcmd tools
+- name: fix broken packages
+  shell: apt-get -y --fix-broken install
+
+- name: install msodbcsql18
   environment:
     ACCEPT_EULA: "Y"
   apt:
-    name:
-      - mssql-tools18
-      - unixodbc-dev
+    name: msodbcsql18
     state: present
-    update_cache: yes
+
+- name: install mssql-tools18
+  environment:
+    ACCEPT_EULA: "Y"
+  apt:
+    name: mssql-tools18
+    state: present
+
+- name: install unixodbc-dev
+  apt:
+    name: unixodbc-dev
+    state: present
 
 - name: copy database init script
   copy:
@@ -52,11 +64,11 @@
 - name: initialize database
   shell: |
     /opt/mssql-tools18/bin/sqlcmd \
-      -S {{ sql_server }}.database.windows.net \
-      -U {{ sql_username }} \
-      -P "{{ sql_password }}" \
-      -d {{ sql_database }} \
-      -i /tmp/init.sql
+    -S {{ sql_server }}.database.windows.net \
+    -U {{ sql_username }} \
+    -P "{{ sql_password }}" \
+    -d {{ sql_database }} \
+    -i /tmp/init.sql
 
 - name: run backend container
   community.docker.docker_container:
