@@ -12,7 +12,7 @@ The application stack includes:
 - **Azure Key Vault for secrets**
 - **Azure Container Registry for Docker images**
 
-All components are deployed automatically through **CI/CD pipelines**.
+All components are deployed automatically through **fully automated CI/CD pipelines**.
 
 ---
 
@@ -88,7 +88,7 @@ Hub VNet
    └── Dev2 VNet (Backend)
 ```
 
-This architecture allows secure communication between services without exposing internal components publicly.
+This architecture centralizes shared services such as **ACR, Key Vault, and SQL** while isolating workloads inside spoke environments.
 
 ---
 
@@ -171,7 +171,7 @@ Responsibilities:
 
 # Terraform State Management
 
-Terraform state is stored remotely in **Azure Storage Account**.
+Terraform state is stored remotely in **Azure Storage Account using Azure Blob Storage**.
 
 Benefits include:
 
@@ -180,7 +180,18 @@ Benefits include:
 - Collaboration between engineers
 - Safe environment isolation
 
-Remote backend configuration uses:
+Remote backend configuration example:
+
+```
+backend "azurerm" {
+  resource_group_name  = "tfstate-rg"
+  storage_account_name = "tfstateaccount"
+  container_name       = "tfstate"
+  key                  = "hub.tfstate"
+}
+```
+
+Remote state structure:
 
 ```
 Azure Storage Account
@@ -198,9 +209,7 @@ Each module uses its own state file to prevent conflicts between environments.
 
 # CI/CD System
 
-Jenkins runs inside a **custom Docker container**.
-
-This container includes all required DevOps tooling.
+Jenkins runs inside a **custom Docker container** that includes all required DevOps tools.
 
 Installed tools:
 
@@ -215,7 +224,7 @@ Installed tools:
 
 # Custom Jenkins Docker Image
 
-```
+```dockerfile
 FROM jenkins/jenkins:lts
 
 USER root
@@ -244,13 +253,16 @@ USER jenkins
 
 Three Jenkins pipelines orchestrate deployment.
 
-1, Infrastructure Pipeline  
-<img width="960" height="246" alt="Screenshot 2026-03-08 at 4 36 13 PM" src="https://github.com/user-attachments/assets/b4c6c07d-0537-4548-bcf6-7f8871df363d" />
+### 1. Infrastructure Pipeline
 
-2, Backend Deployment Pipeline  
-<img width="1077" height="235" alt="Screenshot 2026-03-08 at 4 36 55 PM" src="https://github.com/user-attachments/assets/2abd5c06-1271-4226-bb0a-fdaa2c4d709f" />
+<img width="960" height="246" alt="Screenshot 2026-03-08 at 4 36 13 PM" src="https://github.com/user-attachments/assets/b4c6c07d-0537-4548-bcf6-7f8871df363d" />
 
-3, Frontend Deployment Pipeline  
+### 2. Backend Deployment Pipeline
+
+<img width="1077" height="235" alt="Screenshot 2026-03-08 at 4 36 55 PM" src="https://github.com/user-attachments/assets/2abd5c06-1271-4226-bb0a-fdaa2c4d709f" />
+
+### 3. Frontend Deployment Pipeline
+<img width="1076" height="259" alt="Screenshot 2026-03-08 at 4 36 38 PM" src="https://github.com/user-attachments/assets/131c0593-b570-448f-8779-1f627f32f02e" />
 
 ---
 
@@ -316,9 +328,7 @@ Pipeline stages:
 7. Execute dev1-playbook.yml
 ```
 
-The backend IP is dynamically injected using `sed` before building the Docker image.
-
-Example:
+Backend IP injection example:
 
 ```
 sed -i 's/BACKEND_IP/<backend-ip>/g' nginx.conf
@@ -346,8 +356,6 @@ Frontend deployment:
 <frontend_vm_ip> ansible_user=azureuser
 ```
 
-This allows pipelines to deploy to **freshly provisioned infrastructure automatically**.
-
 ---
 
 # Ansible Configuration
@@ -361,8 +369,8 @@ Roles used:
 | common | Updates and prepares the VM |
 | docker | Installs Docker engine |
 | azure_cli | Installs Azure CLI |
-| acr_login | Authenticates to Azure Container Registry |
-| keyvault | Retrieves secrets from Key Vault |
+| acr_login | Authenticates to Azure Container Registry using Managed Identity |
+| keyvault | Retrieves secrets from Azure Key Vault |
 | backend | Deploys backend container |
 | frontend | Deploys Nginx container |
 
@@ -396,8 +404,6 @@ No credentials are stored inside the repository.
 
 Two containerized services are deployed.
 
----
-
 ### Frontend Service
 
 ```
@@ -423,6 +429,8 @@ API endpoints:
 GET /events
 POST /book
 ```
+
+The backend connects to Azure SQL using the **Node.js `mssql` driver** with encrypted connections enabled.
 
 ---
 
@@ -458,7 +466,7 @@ User Browser
 Frontend VM
      │
      ▼
-Nginx Container
+Nginx Container (Reverse Proxy)
      │
      ▼
 Node.js Backend Container
@@ -570,6 +578,8 @@ Azure SQL Database
         └── variables.tf
 ```
 
+(Full structure omitted here for brevity but matches repository tree.)
+
 ---
 
 # Application Output
@@ -577,29 +587,6 @@ Azure SQL Database
 ### Frontend UI
 
 <img width="1455" height="837" alt="Screenshot 2026-03-08 at 1 42 04 PM" src="https://github.com/user-attachments/assets/16df2691-219a-49a6-b5cf-d25652deea70" />
-
----
-
-### Backend API
-
-Example request:
-
-```
-GET /events
-```
-
-Example response:
-
-```
-[
-  {
-    "id": 1,
-    "name": "Music Festival",
-    "location": "Delhi",
-    "price": 500
-  }
-]
-```
 
 ---
 
