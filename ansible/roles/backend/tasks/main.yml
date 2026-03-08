@@ -25,7 +25,7 @@
     ports:
       - "5000:5000"
     env:
-      DB_HOST: "{{ sql_server }}.database.windows.net"
+      DB_HOST: "{{ sql_server }}"
       DB_NAME: "{{ sql_database }}"
       DB_USER: "{{ sql_username }}"
       DB_PASSWORD: "{{ sql_password }}"
