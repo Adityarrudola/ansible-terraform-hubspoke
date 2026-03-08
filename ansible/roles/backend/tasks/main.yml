@@ -1,21 +1,13 @@
 ---
-# Install pip (required for docker python SDK)
-
 - name: install python pip
   apt:
     name: python3-pip
     state: present
     update_cache: yes
 
-
-# Install docker python sdk so Ansible docker modules work
-
 - name: install docker python sdk
   pip:
     name: docker
-
-
-# Pull backend image from ACR
 
 - name: pull backend image
   community.docker.docker_image:
@@ -30,24 +22,21 @@
       - gnupg
     state: present
 
-
 - name: add microsoft gpg key
   shell: |
     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
-
 - name: add microsoft sql repository
   shell: |
-    curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
-    > /etc/apt/sources.list.d/mssql-release.list
-
+    curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
 
 - name: update apt cache
   apt:
     update_cache: yes
 
-
 - name: install sqlcmd tools
+  environment:
+    ACCEPT_EULA: "Y"
   apt:
     name:
       - mssql-tools18
