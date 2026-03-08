@@ -1,8 +1,5 @@
 - hosts: dev1
   become: yes
-  
-  vars_files:
-    - ../vars/secrets.yml
 
   roles:
     - common

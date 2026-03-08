@@ -66,19 +66,17 @@ pipeline {
         stage('Generate Ansible Inventory') {
             steps {
                 script {
-
-                    env.DEV1_IP = sh(
-                        script: """
-                            cd terraform/dev-1
-                            terraform init -input=false
-                            terraform output -raw dev1_public_ip
-                        """,
+                    def frontendIP = sh(
+                        script: 'cd terraform/dev-1 && terraform output -raw dev1_public_ip',
                         returnStdout: true
                     ).trim()
 
                     sh """
-                    printf "[dev1]\\n%s ansible_user=azureuser\\n" "${env.DEV1_IP}" > ansible/inventory/hosts.ini
+                    echo "[dev1]" > ansible/inventory/hosts.ini
+                    echo "${frontendIP} ansible_user=azureuser" >> ansible/inventory/hosts.ini
                     """
+
+                    echo "Frontend IP: ${frontendIP}"
                 }
             }
         }
