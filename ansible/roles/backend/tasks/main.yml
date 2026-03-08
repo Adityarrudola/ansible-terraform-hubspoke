@@ -14,45 +14,6 @@
     name: hubrudcontainerregistry.azurecr.io/backend:latest
     source: pull
 
-- name: install sql dependencies
-  apt:
-    name:
-      - curl
-      - apt-transport-https
-      - gnupg
-      - software-properties-common
-    state: present
-
-- name: add microsoft gpg key
-  shell: curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-
-- name: add microsoft sql repository
-  shell: curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
-
-- name: update apt cache
-  apt:
-    update_cache: yes
-
-- name: install msodbcsql18
-  shell: ACCEPT_EULA=Y apt-get install -y msodbcsql18
-
-- name: install mssql-tools18
-  shell: ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
-
-- name: copy database init script
-  copy:
-    src: init.sql
-    dest: /tmp/init.sql
-
-- name: initialize database
-  shell: |
-    /opt/mssql-tools18/bin/sqlcmd \
-    -S {{ sql_server }}.database.windows.net \
-    -U {{ sql_username }} \
-    -P "{{ sql_password }}" \
-    -d {{ sql_database }} \
-    -i /tmp/init.sql
-
 - name: run backend container
   community.docker.docker_container:
     name: backend
