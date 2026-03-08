@@ -1,39 +1,42 @@
 ---
-- name: Install Docker SDK for Python
+
+- name: install python pip
+  apt:
+    name: python3-pip
+    state: present
+    update_cache: yes
+
+- name: install docker python sdk
   pip:
     name: docker
 
-- name: Pull backend image
+- name: pull backend image
   community.docker.docker_image:
     name: hubrudcontainerregistry.azurecr.io/backend:latest
     source: pull
 
-- name: Install SQL client tools
+- name: install sqlcmd tools
   apt:
-    name: mssql-tools
-    state: present
-    update_cache: yes
-
-- name: Install unixODBC
-  apt:
-    name: unixodbc-dev
+    name:
+      - mssql-tools
+      - unixodbc-dev
     state: present
 
-- name: Copy database initialization script
+- name: copy database init script
   copy:
-    src: ../../../database/init.sql
+    src: init.sql
     dest: /tmp/init.sql
 
-- name: Initialize Azure SQL Database
+- name: initialize database
   shell: |
     /opt/mssql-tools/bin/sqlcmd \
-    -S {{ sql_server }}.database.windows.net \
-    -U {{ sql_username }} \
-    -P "{{ sql_password }}" \
-    -d {{ sql_database }} \
-    -i /tmp/init.sql
+      -S {{ sql_server }}.database.windows.net \
+      -U {{ sql_username }} \
+      -P "{{ sql_password }}" \
+      -d {{ sql_database }} \
+      -i /tmp/init.sql
 
-- name: Run backend container
+- name: run backend container
   community.docker.docker_container:
     name: backend
     image: hubrudcontainerregistry.azurecr.io/backend:latest
