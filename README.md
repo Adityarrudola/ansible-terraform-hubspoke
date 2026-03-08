@@ -18,7 +18,12 @@ All components are deployed automatically through **fully automated CI/CD pipeli
 
 # Architecture Overview
 
+Horizontal
 <img width="5806" height="2309" alt="diagram-export-8-3-2026-4_20_43-PM" src="https://github.com/user-attachments/assets/ec0ed7a5-fe80-4ab6-bac8-97fc324316c5" />
+
+Vertical
+<img width="1434" height="2334" alt="diagram-export-8-3-2026-5_52_13-PM" src="https://github.com/user-attachments/assets/dfb06e01-b9fa-4902-9456-9eab63a29f3e" />
+
 
 ### High-Level Flow
 
