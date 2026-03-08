@@ -1,4 +1,5 @@
 ---
+# Install pip (required for docker python SDK)
 
 - name: install python pip
   apt:
@@ -6,21 +7,53 @@
     state: present
     update_cache: yes
 
+
+# Install docker python sdk so Ansible docker modules work
+
 - name: install docker python sdk
   pip:
     name: docker
+
+
+# Pull backend image from ACR
 
 - name: pull backend image
   community.docker.docker_image:
     name: hubrudcontainerregistry.azurecr.io/backend:latest
     source: pull
 
+- name: install sql dependencies
+  apt:
+    name:
+      - curl
+      - apt-transport-https
+      - gnupg
+    state: present
+
+
+- name: add microsoft gpg key
+  shell: |
+    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+
+
+- name: add microsoft sql repository
+  shell: |
+    curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
+    > /etc/apt/sources.list.d/mssql-release.list
+
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+
+
 - name: install sqlcmd tools
   apt:
     name:
-      - mssql-tools
+      - mssql-tools18
       - unixodbc-dev
     state: present
+    update_cache: yes
 
 - name: copy database init script
   copy:
@@ -29,7 +62,7 @@
 
 - name: initialize database
   shell: |
-    /opt/mssql-tools/bin/sqlcmd \
+    /opt/mssql-tools18/bin/sqlcmd \
       -S {{ sql_server }}.database.windows.net \
       -U {{ sql_username }} \
       -P "{{ sql_password }}" \
