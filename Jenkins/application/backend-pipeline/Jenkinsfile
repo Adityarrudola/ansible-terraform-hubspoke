@@ -39,7 +39,11 @@ pipeline {
                 script {
 
                     env.DEV2_IP = sh(
-                        script: "cd terraform/dev-2 && terraform output -raw dev2_public_ip -no-color",
+                        script: '''
+                        cd terraform/dev-2
+                        terraform init -input=false >/dev/null
+                        terraform output -raw dev2_public_ip
+                        ''',
                         returnStdout: true
                     ).trim()
 
