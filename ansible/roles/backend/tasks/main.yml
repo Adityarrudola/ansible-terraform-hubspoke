@@ -20,41 +20,24 @@
       - curl
       - apt-transport-https
       - gnupg
+      - software-properties-common
     state: present
 
 - name: add microsoft gpg key
-  shell: |
-    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+  shell: curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
 - name: add microsoft sql repository
-  shell: |
-    curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+  shell: curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
 
 - name: update apt cache
   apt:
     update_cache: yes
 
-- name: fix broken packages
-  shell: apt-get -y --fix-broken install
-
 - name: install msodbcsql18
-  environment:
-    ACCEPT_EULA: "Y"
-  apt:
-    name: msodbcsql18
-    state: present
+  shell: ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
 - name: install mssql-tools18
-  environment:
-    ACCEPT_EULA: "Y"
-  apt:
-    name: mssql-tools18
-    state: present
-
-- name: install unixodbc-dev
-  apt:
-    name: unixodbc-dev
-    state: present
+  shell: ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
 
 - name: copy database init script
   copy:
